@@ -13,6 +13,6 @@ The optimization is achieved by counting all sub-parts of the solution as solved
 6) Close the console. Ignore any random errors that may appear; they are likely harmless.
 
 ### Notes about saving:
-*Note 1*: ``Please be aware that upon loading the saved game, the puzzle will already be scrambled to the next random state, and there's no need to press space as it may count as a skip.*``
+*Note 1*: ``Please be aware that upon loading the saved game, the puzzle will already be scrambled to the next random state, and there's no need to press space as it may count as a skip.``
 
 *Note 2*: ``When you save the game, your progress on the current scramble will be lost. Saving in the middle of the solve is not possible due to technical constraints, and it's not recommended anyway.``
