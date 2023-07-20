@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>3x3 Grid with Color-Coded Elements</title>
+  <style>
+    body {
+      color: white;
+      font-family: Calibri;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #2c2c2c;
+    }
+    .container {
+      display: flex;
+      flex-direction: column; /* Arrange items vertically */
+      align-items: center; /* Center items horizontally */
+      justify-content: center; /* Center items vertically */
+      height: 100vh; /* Use the full viewport height */
+    }
+    .information{
+     display: block;
+     text-align:center;
+    }
+    .grid-container {
+      width: 400px;
+      height: 400px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 1px;
+      margin: 30px;
+      border: 0;
+    }
+
+    .grid-element {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 80px;
+      font-weight: bold;
+      width: 100%;
+      height: 100%;
+      border: 1px solid black;
+     -webkit-user-select: none; /* Chrome, Safari, Opera */
+     -moz-user-select: none; /* Firefox */
+     -ms-user-select: none; /* IE/Edge */
+     user-select: none; /* Generic */
+     color: black;
+    }
+    #moves {
+      font-size: 60px;
+    }
+    #scramblesLeft {
+      font-size: 30px;
+    }
+    #scramblesDone {
+      font-size: 30px;
+    }
+    #actuallyDone {
+      font-size: 20px;
+    }
+    #finishedBad {
+    font-size: 20px;
+    }
+    #skips {
+    font-size: 20px;
+    }
+    .red {
+      background-color: #fb6364;
+    }
+
+    .yellow {
+      background-color: #eeff55;
+    }
+
+    .green {
+      background-color: #6fff8c;
+    }
+
+    .light-blue {
+      background-color: #89dcff;
+    }
+    .empty-tle {
+      color: #2c2c2c;
+      border: 0;
+    }
+    
+    .neutralMoves {
+     color: white;
+    }
+    .goodMoves {
+     color: green;
+    }
+    .badMoves {
+     color: red;
+    }
+    
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="grid-container" id="gridContainer">
+    <!-- Grid elements will be generated here -->
+  </div>
+    <div class ="information">
+    <p id ="moves">0</p>
+    <p id ="scramblesLeft"></p>
+    <p id ="scramblesDone"></p>
+    <p id ="actuallyDone"></p>
+    <p id ="finishedBad"></p>
+    <p id ="skips"></p>
+    </div>
+    </div>
+    <script src="json.js"></script>
+  <script>
+    const movesDisplayElement = document.getElementById('moves');
+    const scramblesLeftDisplayElement = document.getElementById('scramblesLeft');
+    const scramblesDoneDisplayElement = document.getElementById('scramblesDone');
+    const scramblesActuallyDoneDisplayElement = document.getElementById('actuallyDone');
+    const finishedBadDisplayElement = document.getElementById('finishedBad');
+    const skipsDisplayElement = document.getElementById('skips');
+    var scramblesList = JSON.parse(myjson);
+    updateScrLength();
+    var currentState = '';
+    var nowSolving = false;
+    var currentMoves = 0;
+    var currentOpt = 0;
+    var finishedBad = 0;
+    var skips = 0;
+    var actuallyDoneAmount = 0;
+    var scramblesToRemove = [];
+    // Function to initialize the grid with the default state
+    function getRandomItem(list) {
+      const randomIndex = Math.floor(Math.random() * list.length);
+      return list[randomIndex];
+    }
+    function updateScrLength(){
+        var scL = scramblesList.length;
+        var scDone = 181439 - scramblesList.length;
+        var precentage = scDone * 100 / 181439;
+        scramblesLeftDisplayElement.innerHTML = "Scrambles left: " + scL.toString();
+        scramblesDoneDisplayElement.innerHTML = "Scrambles done: " + scDone.toString() + " (" + precentage.toFixed(3) + "%)";
+    }
+    function initializeGrid() {
+      scramblesToRemove.length = 0;
+      movesDisplayElement.classList = 'neutralMoves';
+      if (scramblesList.length === 0){
+        movesDisplayElement.innerHTML = "I Love Egg!<br><img src=\"https://cdn.discordapp.com/emojis/890730587462185012.webp\"></img>";
+      }else{
+          var randItem = getRandomItem(scramblesList);
+          currentState = randItem['s'];
+          currentOpt = randItem['m']
+          scramblesToRemove.push(currentState);
+          nowSolving = true;
+          currentMoves = 0;
+          movesDisplayElement.innerHTML = 0;
+          applyGridState();
+      }
+    }
+    function convertScramble(){
+        return document.getElementById('gridContainer').innerHTML.replace(/[^\d]/g, '').split('').join(' ').replace(/(.*)( .*)/, '$1$2').replace(/^(.{5})(.)(.{5})(.)/, '$1/$3/');
+    }
+    function updatePuzzleInfo(){
+        if (nowSolving){
+                currentMoves += 1;
+                movesDisplayElement.innerHTML = currentMoves;
+            
+            if (document.getElementById('gridContainer').innerHTML.replace(/[^\d]/g, '') === '123456780'){
+                nowSolving = false;
+                if (currentMoves.toString() === currentOpt){
+                    var before = scramblesList.length;
+                    scramblesToRemove.forEach(function(item) {
+                      scramblesList = scramblesList.filter(egg => egg['s'] !== item);
+                    });
+                    updateScrLength();
+                    movesDisplayElement.innerHTML += " (removed " + (before - scramblesList.length).toString() + " scrambles)";
+                    movesDisplayElement.classList = 'goodMoves';
+                    actuallyDoneAmount+=1;
+                    scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + actuallyDoneAmount.toString();
+                }else{
+                    console.log("WRONG, opt was " + currentOpt.toString());
+                    movesDisplayElement.innerHTML += " (not optimal)";
+                    movesDisplayElement.classList = 'badMoves';
+                    finishedBad+=1;
+                    finishedBadDisplayElement.innerHTML = "Fails (finished, not optimal): " + finishedBad.toString();
+                }
+                scramblesToRemove.length = 0;
+            }else{
+                scramblesToRemove.push(convertScramble());
+            }
+        }
+    }
+    
+    const allowedIndexes = {
+      0: [1, 3],
+      1: [0, 2, 4],
+      2: [1, 5],
+      3: [0, 4, 6],
+      4: [1, 3, 5, 7],
+      5: [2, 4, 8],
+      6: [3, 7],
+      7: [4, 6, 8],
+      8: [5, 7]
+    };
+
+    function isHoveredIndexAllowed(zeroIndex, hoveredIndex) {
+      const allowedIndexesArray = allowedIndexes[zeroIndex];
+      if (allowedIndexesArray) {
+        return allowedIndexesArray.includes(hoveredIndex);
+      }
+      return false;
+    }
+    // Function to swap 0 with the hovered tile
+    function performMove(zeroIndex, hoveredIndex){
+        
+        if (isHoveredIndexAllowed(zeroIndex, hoveredIndex)) {
+        // Swap numbers and classes
+        
+        const gridElements = document.getElementsByClassName('grid-element');
+        const tempNum = gridElements[hoveredIndex].textContent;
+        const tempClass = gridElements[hoveredIndex].className;
+
+        gridElements[hoveredIndex].textContent = '0';
+        gridElements[hoveredIndex].className = gridElements[zeroIndex].className;
+        gridElements[zeroIndex].textContent = tempNum;
+        gridElements[zeroIndex].className = tempClass;
+        updatePuzzleInfo();
+        
+      }
+    }
+    
+    function swapTiles(hoveredElement) {
+      const gridElements = document.getElementsByClassName('grid-element');
+      const zeroIndex = Array.from(gridElements).findIndex((element) => element.textContent === '0');
+      const hoveredIndex = Array.from(gridElements).indexOf(hoveredElement);
+      performMove(zeroIndex, hoveredIndex);
+    }
+
+    // Function to apply the grid state
+    function applyGridState() {
+      const inputString = currentState;
+      const gridNumbers = inputString.split('/');
+      const gridContainer = document.getElementById('gridContainer');
+
+      gridContainer.innerHTML = '';
+
+      for (let i = 0; i < gridNumbers.length; i++) {
+        const rowNumbers = gridNumbers[i].trim().split(' ');
+        for (let j = 0; j < rowNumbers.length; j++) {
+          const num = rowNumbers[j].trim();
+          const gridElement = document.createElement('div');
+          gridElement.textContent = num;
+          gridElement.classList.add('grid-element');
+
+          if (num === '1' || num === '2' || num === '3') {
+            gridElement.classList.add('red');
+          } else if (num === '4' || num === '7') {
+            gridElement.classList.add('yellow');
+          } else if (num === '5' || num === '6') {
+            gridElement.classList.add('green');
+          } else if (num === '8') {
+            gridElement.classList.add('light-blue');
+          } else if (num === '0') {
+            gridElement.classList.add('empty-tle');
+          }
+
+          gridElement.addEventListener('mouseover', function() {
+            swapTiles(this);
+          });
+
+          gridContainer.appendChild(gridElement);
+        }
+      }
+    }
+
+        const zeroIndexList = [
+      { r: -1, l: 1, u: 3, d: -1 },
+      { r: 0, l: 2, u: 4, d: -1 },
+      { r: 1, l: -1, u: 5, d: -1 },
+      { r: -1, l: 4, u: 6, d: 0 },
+      { r: 3, l: 5, u: 7, d: 1 },
+      { r: 4, l: -1, u: 8, d: 2 },
+      { r: -1, l: 7, u: -1, d: 3 },
+      { r: 6, l: 8, u: -1, d: 4 },
+      { r: 7, l: -1, u: -1, d: 5 }
+    ];
+    function findZeroIndex(){
+            return Array.from(document.getElementsByClassName('grid-element')).findIndex((element) => element.textContent === '0');
+        }
+    document.addEventListener('keydown', function(event) {
+      var mykey = event.key.toLowerCase();
+      //console.log(mykey);
+      const dphKeys = str => str.replace(/arrowright|arrowleft|arrowup|arrowdown/g, key => ({arrowright:'r', arrowleft:'l', arrowup:'u', arrowdown:'d'}[key]));
+      const benKeys = str => str.replace(/f|j|i|k/g, key => ({f:'r',j:'l',i:'u',k:'d'}[key]));
+      mykey = dphKeys(mykey);
+      mykey = benKeys(mykey);
+      if (/^[rlud]$/i.test(mykey)){
+        var zeroIndex = findZeroIndex();
+        var hoveredElement = zeroIndexList[zeroIndex][mykey];
+        if (hoveredElement != -1){
+            performMove(zeroIndex, zeroIndexList[zeroIndex][mykey]);
+        }
+      }
+      // Check if the pressed key is the spacebar (key code 32)
+      if (event.keyCode === 32) {
+        // Perform your action here, for example, display an alert
+        if(nowSolving){
+            skips+=1;
+            skipsDisplayElement.innerHTML = "Skips (spacebar while solving): " + skips.toString();
+        }
+        initializeGrid();
+
+      }
+    });
+    // Initialize the grid with the default state
+    initializeGrid();
+  </script>
+</body>
+</html>
