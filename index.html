@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>3x3 Grid with Color-Coded Elements</title>
+    <title>181439</title>
     <style>
         body {
             color: white;
@@ -154,6 +154,23 @@
         var actuallyDoneAmount = 0;
         var scramblesToRemove = [];
         // Function to initialize the grid with the default state
+        function savegame(){
+            console.log("loadgame(\"" + btoa(JSON.stringify([scramblesList, finishedBad, actuallyDoneAmount, skips]))+"\")");
+        }
+        function loadgame(mystring){
+            const data = JSON.parse(atob(mystring));
+            scramblesList = data[0];
+            updateScrLength();
+            finishedBad = data[1];
+            actuallyDoneAmount = data[2];
+            skips = data[3]
+            scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + actuallyDoneAmount.toString();
+            finishedBadDisplayElement.innerHTML = "Fails (finished, not optimal): " + finishedBad.toString();
+            skipsDisplayElement.innerHTML = "Skips (spacebar while solving): " + skips.toString();
+            nowSolving = false;
+            initializeGrid();
+        }
+        
         function getRandomItem(list) {
             const randomIndex = Math.floor(Math.random() * list.length);
             return list[randomIndex];
