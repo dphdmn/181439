@@ -178,6 +178,10 @@
     </div>
     <script src="json.js"></script>
     <script>
+        function debug() {
+            scramblesList = scramblesList.slice(175000, 175005);
+        }
+
         function wrapTextWithSpan(text, classname) {
             return "<span class=\"" + classname + "\">" + text + "</span>";
         }
@@ -226,6 +230,7 @@
         var finishedBad = 0;
         var skips = 0;
         var actuallyDoneAmount = 0;
+        var randItem;
         var scramblesToRemove = [];
         // Function to initialize the grid with the default state
         function savegame() {
@@ -265,7 +270,13 @@
             if (scramblesList.length === 0) {
                 movesDisplayElement.innerHTML = "I Love Egg!<br><img src=\"https://cdn.discordapp.com/emojis/890730587462185012.webp\"></img>";
             } else {
-                var randItem = getRandomItem(scramblesList);
+                if (scramblesList.length === 1) {
+                    randItem = scramblesList[0];
+                } else {
+                    while (typeof randItem === 'undefined' || randItem['s'] === currentState) {
+                        randItem = getRandomItem(scramblesList);
+                    }
+                }
                 currentState = randItem['s'];
                 currentOpt = randItem['m']
                 scramblesToRemove.push(currentState);
@@ -298,7 +309,7 @@
                         actuallyDoneAmount += 1;
                         scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + wrapTextWithSpan(actuallyDoneAmount.toString(), "numbers");
                     } else {
-                        console.log("WRONG, opt was " + currentOpt.toString());
+                        console.log("WRONG, opt was " + currentOpt.toString() + " scr: " + currentState);
                         movesDisplayElement.innerHTML += " (not optimal)";
                         movesDisplayElement.classList = 'badMoves';
                         finishedBad += 1;
