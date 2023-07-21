@@ -45,6 +45,11 @@
             border: 0;
         }
 
+        .container-CB {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
         .grid-element {
             display: flex;
             justify-content: center;
@@ -156,6 +161,59 @@
             outline: none;
             box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #555555;
         }
+
+        /* Hide the default checkbox */
+        input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        /* Style the custom checkbox container */
+        label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        /* Create the checkbox shape */
+        label::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            background-color: transparent;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        /* Style the custom checkmark when checked */
+        input[type="checkbox"]:checked+label::before {
+            background-color: #fff;
+            transform: rotate(-45deg);
+            border-color: #00FFFF;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Add a cool animation to the checkmark */
+        label::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 4px;
+            width: 6px;
+            height: 12px;
+            border: 2px solid #00FFFF;
+            border-top: none;
+            border-right: none;
+            transform: translateY(-50%) rotate(-45deg);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 
@@ -174,10 +232,26 @@
             <button id="saveButton">Save to File</button>
             <input type="file" id="loadButton" accept=".txt" style="display: none;">
             <button onclick="document.getElementById('loadButton').click()">Load from File</button>
+            <br>
+
+            <div class="container-CB">
+                <input type="checkbox" id="myCheckbox" checked="True">
+                <label id="cblabel" for="myCheckbox">Mouse control enabled</label>
+            </div>
         </div>
     </div>
     <script src="json.js"></script>
     <script>
+
+        const checkbox = document.getElementById('myCheckbox');
+        const cblabel = document.getElementById('cblabel');
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                cblabel.innerHTML = "Mouse control enabled";
+            } else {
+                cblabel.innerHTML = "Mouse control disabled";
+            }
+        });
         function debug() {
             scramblesList = scramblesList.slice(175000, 175005);
         }
@@ -195,11 +269,10 @@
                 reader.onload = (e) => {
                     const loadedContent = e.target.result;
                     loadgame(loadedContent);
-                    setTimeout(function() {
-                      // Code to execute after the delay of 2 seconds
-                      cntrlPressed = false;
+                    setTimeout(function () {
+                        cntrlPressed = false;
                     }, 1000);
-                    
+
                 };
 
                 reader.readAsText(file);
@@ -308,7 +381,7 @@
                     nowSolving = false;
                     if (currentMoves.toString() === currentOpt) {
                         var before = scramblesList.length;
-                        scramblesToRemove.forEach(function(item) {
+                        scramblesToRemove.forEach(function (item) {
                             scramblesList = scramblesList.filter(egg => egg['s'] !== item);
                         });
                         updateScrLength();
@@ -444,8 +517,8 @@
                         gridElement.classList.add('empty-tle');
                     }
 
-                    gridElement.addEventListener('mouseover', function() {
-                        if (!cntrlPressed) {
+                    gridElement.addEventListener('mouseover', function () {
+                        if (!cntrlPressed && checkbox.checked) {
                             swapTiles(this);
                         }
                     });
@@ -456,65 +529,65 @@
         }
 
         const zeroIndexList = [{
-                r: -1,
-                l: 1,
-                u: 3,
-                d: -1
-            },
-            {
-                r: 0,
-                l: 2,
-                u: 4,
-                d: -1
-            },
-            {
-                r: 1,
-                l: -1,
-                u: 5,
-                d: -1
-            },
-            {
-                r: -1,
-                l: 4,
-                u: 6,
-                d: 0
-            },
-            {
-                r: 3,
-                l: 5,
-                u: 7,
-                d: 1
-            },
-            {
-                r: 4,
-                l: -1,
-                u: 8,
-                d: 2
-            },
-            {
-                r: -1,
-                l: 7,
-                u: -1,
-                d: 3
-            },
-            {
-                r: 6,
-                l: 8,
-                u: -1,
-                d: 4
-            },
-            {
-                r: 7,
-                l: -1,
-                u: -1,
-                d: 5
-            }
+            r: -1,
+            l: 1,
+            u: 3,
+            d: -1
+        },
+        {
+            r: 0,
+            l: 2,
+            u: 4,
+            d: -1
+        },
+        {
+            r: 1,
+            l: -1,
+            u: 5,
+            d: -1
+        },
+        {
+            r: -1,
+            l: 4,
+            u: 6,
+            d: 0
+        },
+        {
+            r: 3,
+            l: 5,
+            u: 7,
+            d: 1
+        },
+        {
+            r: 4,
+            l: -1,
+            u: 8,
+            d: 2
+        },
+        {
+            r: -1,
+            l: 7,
+            u: -1,
+            d: 3
+        },
+        {
+            r: 6,
+            l: 8,
+            u: -1,
+            d: 4
+        },
+        {
+            r: 7,
+            l: -1,
+            u: -1,
+            d: 5
+        }
         ];
 
         function findZeroIndex() {
             return Array.from(document.getElementsByClassName('grid-element')).findIndex((element) => element.textContent === '0');
         }
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             if (event.ctrlKey) {
                 cntrlPressed = true;
             }
@@ -525,13 +598,13 @@
                 arrowleft: 'l',
                 arrowup: 'u',
                 arrowdown: 'd'
-            } [key]));
+            }[key]));
             const benKeys = str => str.replace(/f|j|i|k/g, key => ({
                 f: 'r',
                 j: 'l',
                 i: 'u',
                 k: 'd'
-            } [key]));
+            }[key]));
             mykey = dphKeys(mykey);
             mykey = benKeys(mykey);
             if (/^[rlud]$/i.test(mykey)) {
@@ -552,7 +625,7 @@
 
             }
         });
-        document.addEventListener('keyup', function(event) {
+        document.addEventListener('keyup', function (event) {
             if (event.key === 'Control') {
                 cntrlPressed = false;
             }
