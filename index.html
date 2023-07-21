@@ -23,15 +23,16 @@
             background-color: #202020;
             box-shadow: 0 8px 8px rgba(0, 255, 255, 2);
             position: absolute;
-            top: 150px;
+            top: 100px;
+            left: 500px;
         }
 
         .information {
             position: absolute;
-            top: 150px;
+            top: 100px;
             min-width: 400px;
             /* Adjust the initial top position */
-            left: 1350px;
+            left: 1200px;
             /* Adjust the initial left position */
             text-align: center;
             border: 2px solid;
@@ -281,12 +282,18 @@
             <input type="checkbox" id="myCheckbox" checked="True">
             <label id="cblabel" for="myCheckbox">Mouse control enabled</label>
         </div>
+        <div class="container-CB">
+            <input type="checkbox" id="myCheckbox_keys" checked="False">
+            <label id="cblabel_keys" for="myCheckbox_keys">I am not vovker</label>
+        </div>
     </div>
     <script src="json.js"></script>
     <script>
         const container = document.querySelector('.container');
         const checkbox = document.getElementById('myCheckbox');
         const cblabel = document.getElementById('cblabel');
+        const checkbox_keys = document.getElementById('myCheckbox_keys');
+        const cblabel_keys = document.getElementById('cblabel_keys');
         function loadCheckboxState() {
             const savedState = localStorage.getItem('checkboxState');
             if (savedState !== null) {
@@ -298,6 +305,16 @@
                     cblabel.innerHTML = "Mouse control disabled";
                 }
             }
+            const savedStateVovker = localStorage.getItem('checkboxState_vovker');
+            if (savedStateVovker !== null) {
+                if (savedStateVovker === 'true') {
+                    checkbox_keys.checked = true;
+                    cblabel_keys.innerHTML = "I am vovker";
+                } else {
+                    checkbox_keys.checked = false;
+                    cblabel_keys.innerHTML = "I am not vovker";
+                }
+            }
         }
         loadCheckboxState();
         checkbox.addEventListener('change', function () {
@@ -306,6 +323,14 @@
                 cblabel.innerHTML = "Mouse control enabled";
             } else {
                 cblabel.innerHTML = "Mouse control disabled";
+            }
+        });
+        checkbox_keys.addEventListener('change', function () {
+            localStorage.setItem('checkboxState_vovker', checkbox_keys.checked);
+            if (this.checked) {
+                cblabel_keys.innerHTML = "I am vovker";
+            } else {
+                cblabel_keys.innerHTML = "I am not vovker";
             }
         });
         function debug() {
@@ -437,8 +462,8 @@
         function convertScramble() {
             return document.getElementById('gridContainer').innerHTML.replace(/[^\d]/g, '').split('').join(' ').replace(/(.*)( .*)/, '$1$2').replace(/^(.{5})(.)(.{5})(.)/, '$1/$3/');
         }
-        
-        function failedDisplay(){
+
+        function failedDisplay() {
             movesDisplayElement.innerHTML = "you failed, skip!";
             container.style.boxShadow = '0 16px 16px rgba(255, 0, 0, 10)';
             movesDisplayElement.classList = 'badMoves';
@@ -446,10 +471,10 @@
         function updatePuzzleInfo() {
             if (nowSolving) {
                 currentMoves += 1;
-                if (currentMoves >31) {
+                if (currentMoves > 31) {
                     failedDisplay();
-                }else{
-                     movesDisplayElement.innerHTML = currentMoves;
+                } else {
+                    movesDisplayElement.innerHTML = currentMoves;
                 }
                 if (document.getElementById('gridContainer').innerHTML.replace(/[^\d]/g, '') === '123456780') {
                     nowSolving = false;
@@ -474,7 +499,7 @@
                     scramblesToRemove.length = 0;
                 } else {
                     var curScr = convertScramble();
-                    if (scramblesToRemove.includes(curScr)){
+                    if (scramblesToRemove.includes(curScr)) {
                         failedDisplay();
                     }
                     scramblesToRemove.push(curScr);
@@ -678,12 +703,22 @@
                 arrowup: 'u',
                 arrowdown: 'd'
             }[key]));
-            const benKeys = str => str.replace(/f|j|i|k/g, key => ({
-                f: 'r',
-                j: 'l',
-                i: 'u',
-                k: 'd'
-            }[key]));
+            var benkeys;
+            if (!checkbox_keys.checked) {
+                benKeys = str => str.replace(/f|j|i|k/g, key => ({
+                    f: 'r',
+                    j: 'l',
+                    i: 'u',
+                    k: 'd'
+                }[key]));
+            } else {
+                benKeys = str => str.replace(/d|s|i|j/g, key => ({
+                    d: 'r',
+                    s: 'l',
+                    i: 'u',
+                    j: 'd'
+                }[key]));
+            }
             mykey = dphKeys(mykey);
             mykey = benKeys(mykey);
             if (/^[rlud]$/i.test(mykey)) {
@@ -701,7 +736,7 @@
                     skipsDisplayElement.innerHTML = "Skips (spacebar while solving): " + wrapTextWithSpan(skips.toString(), "numbers");
                 }
                 initializeGrid();
-                
+
             }
         });
         document.addEventListener('keyup', function (event) {
@@ -712,7 +747,7 @@
         // Initialize the grid with the default state
         initializeGrid();
 
-// JavaScript to make the floating window draggable
+        // JavaScript to make the floating window draggable
         let isDragging = false;
         let offsetX = 0;
         let offsetY = 0;
@@ -755,7 +790,7 @@
         });
 
 
-// JavaScript to make the floating window draggable
+        // JavaScript to make the floating window draggable
         let game_isDragging = false;
         let game_offsetX = 0;
         let game_offsetY = 0;
