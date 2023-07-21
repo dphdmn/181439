@@ -305,6 +305,7 @@
             anchor.download = filename;
             anchor.click();
             URL.revokeObjectURL(url);
+            document.activeElement.blur();
         });
 
         const movesDisplayElement = document.getElementById('moves');
@@ -360,6 +361,9 @@
         }
 
         function initializeGrid() {
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
             scramblesToRemove.length = 0;
             movesDisplayElement.classList = 'neutralMoves';
             if (scramblesList.length === 0) {
