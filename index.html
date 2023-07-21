@@ -581,7 +581,7 @@
                     }
 
                     gridElement.addEventListener('mouseover', function () {
-                        if (!cntrlPressed && checkbox.checked) {
+                        if (!cntrlPressed && checkbox.checked && !game_isDragging && !isDragging) {
                             swapTiles(this);
                         }
                     });
