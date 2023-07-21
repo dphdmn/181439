@@ -284,7 +284,7 @@
     </div>
     <script src="json.js"></script>
     <script>
-
+        const container = document.querySelector('.container');
         const checkbox = document.getElementById('myCheckbox');
         const cblabel = document.getElementById('cblabel');
         function loadCheckboxState() {
@@ -406,13 +406,16 @@
         }
 
         function initializeGrid() {
+            container.style.boxShadow = '0 8px 8px rgba(0, 255, 255, 2)';
             if (document.activeElement) {
                 document.activeElement.blur();
             }
             scramblesToRemove.length = 0;
             movesDisplayElement.classList = 'neutralMoves';
             if (scramblesList.length === 0) {
-                movesDisplayElement.innerHTML = "I Love Egg!<br><img src=\"https://cdn.discordapp.com/emojis/890730587462185012.webp\"></img>";
+                movesDisplayElement.innerHTML = "<img src=\"https://cdn.discordapp.com/emojis/890730587462185012.webp\"></img>I Love Egg!<img src=\"https://cdn.discordapp.com/emojis/890730587462185012.webp\"></img>";
+                container.style.boxShadow = '0 100px 1000px rgba(255, 255, 0, 10)';
+                document.body.style.backgroundColor = 'white';
             } else {
                 if (scramblesList.length === 1) {
                     randItem = scramblesList[0];
@@ -450,18 +453,26 @@
                         updateScrLength();
                         movesDisplayElement.innerHTML += "<br>(- " + (before - scramblesList.length).toString() + " scrambles!)";
                         movesDisplayElement.classList = 'goodMoves';
+                        container.style.boxShadow = '0px 16px 16px rgba(0, 255, 0, 8)';
                         actuallyDoneAmount += 1;
                         scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + wrapTextWithSpan(actuallyDoneAmount.toString(), "numbers");
                     } else {
                         console.log("WRONG, opt was " + currentOpt.toString() + " scr: " + currentState);
                         movesDisplayElement.innerHTML += "<br>(not optimal)";
                         movesDisplayElement.classList = 'badMoves';
+                        container.style.boxShadow = '0 16px 16px rgba(255, 0, 0, 10)';
                         finishedBad += 1;
                         finishedBadDisplayElement.innerHTML = "Fails (finished, not optimal): " + wrapTextWithSpan(finishedBad.toString(), "numbers");
                     }
                     scramblesToRemove.length = 0;
                 } else {
-                    scramblesToRemove.push(convertScramble());
+                    var curScr = convertScramble();
+                    if (scramblesToRemove.includes(curScr)){
+                        movesDisplayElement.innerHTML += "<br>you failed, skip!";
+                        container.style.boxShadow = '0 16px 16px rgba(255, 0, 0, 10)';
+                        movesDisplayElement.classList = 'badMoves';
+                    }
+                    scramblesToRemove.push(curScr);
                 }
             }
         }
@@ -685,7 +696,7 @@
                     skipsDisplayElement.innerHTML = "Skips (spacebar while solving): " + wrapTextWithSpan(skips.toString(), "numbers");
                 }
                 initializeGrid();
-
+                
             }
         });
         document.addEventListener('keyup', function (event) {
