@@ -218,6 +218,7 @@
         const skipsDisplayElement = document.getElementById('skips');
         var scramblesList = JSON.parse(myjson);
         updateScrLength();
+        var cntrlPressed = false;
         var currentState = '';
         var nowSolving = false;
         var currentMoves = 0;
@@ -384,7 +385,9 @@
                     }
 
                     gridElement.addEventListener('mouseover', function() {
-                        swapTiles(this);
+                        if (!cntrlPressed) {
+                            swapTiles(this);
+                        }
                     });
 
                     gridContainer.appendChild(gridElement);
@@ -452,6 +455,9 @@
             return Array.from(document.getElementsByClassName('grid-element')).findIndex((element) => element.textContent === '0');
         }
         document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey) {
+                cntrlPressed = true;
+            }
             var mykey = event.key.toLowerCase();
             //console.log(mykey);
             const dphKeys = str => str.replace(/arrowright|arrowleft|arrowup|arrowdown/g, key => ({
@@ -484,6 +490,11 @@
                 }
                 initializeGrid();
 
+            }
+        });
+        document.addEventListener('keyup', function(event) {
+            if (event.key === 'Control') {
+                cntrlPressed = false;
             }
         });
         // Initialize the grid with the default state
