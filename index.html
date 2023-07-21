@@ -781,9 +781,6 @@
             game_isDragging = false;
         });
 
-        document.addEventListener('mouseup', () => {
-            game_isDragging = false;
-        });
         document.addEventListener("keydown", function (event) {
             const gridContainer = document.querySelector(".grid-container");
             const computedStyle = window.getComputedStyle(gridContainer);
