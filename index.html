@@ -333,6 +333,22 @@
             7: [4, 6, 8],
             8: [5, 7]
         };
+        //lineral coordinats to X (0..N^2-1) to (0..N-1)
+        function linToX(lin) {
+            let N = 3;
+            return (lin) % N;
+        }
+
+        //lineral coordinats to Y (0..N^2-1) to (0..N-1)
+        function linToY(lin) {
+            let N = 3;
+            return parseInt((Math.floor((lin) / N)));
+        }
+        //X Y coords to lin (0..N-1) (0..N-1) to (0..N^2-1
+        function XYtolin(X, Y) {
+            let N = 3;
+            return Y * N + X;
+        }
 
         function isHoveredIndexAllowed(zeroIndex, hoveredIndex) {
             const allowedIndexesArray = allowedIndexes[zeroIndex];
@@ -343,20 +359,45 @@
         }
         // Function to swap 0 with the hovered tile
         function performMove(zeroIndex, hoveredIndex) {
+            if (zeroIndex != hoveredIndex) {
+                if (isHoveredIndexAllowed(zeroIndex, hoveredIndex)) {
+                    // Swap numbers and classes
 
-            if (isHoveredIndexAllowed(zeroIndex, hoveredIndex)) {
-                // Swap numbers and classes
+                    const gridElements = document.getElementsByClassName('grid-element');
+                    const tempNum = gridElements[hoveredIndex].textContent;
+                    const tempClass = gridElements[hoveredIndex].className;
 
-                const gridElements = document.getElementsByClassName('grid-element');
-                const tempNum = gridElements[hoveredIndex].textContent;
-                const tempClass = gridElements[hoveredIndex].className;
-
-                gridElements[hoveredIndex].textContent = '0';
-                gridElements[hoveredIndex].className = gridElements[zeroIndex].className;
-                gridElements[zeroIndex].textContent = tempNum;
-                gridElements[zeroIndex].className = tempClass;
-                updatePuzzleInfo();
-
+                    gridElements[hoveredIndex].textContent = '0';
+                    gridElements[hoveredIndex].className = gridElements[zeroIndex].className;
+                    gridElements[zeroIndex].textContent = tempNum;
+                    gridElements[zeroIndex].className = tempClass;
+                    updatePuzzleInfo();
+                } else {
+                    if (linToX(zeroIndex) === linToX(hoveredIndex)) {
+                        //same vertical 
+                        Yzero = linToY(zeroIndex);
+                        Yhover = linToY(hoveredIndex);
+                        if (Yhover > Yzero) {
+                            performMove(zeroIndex, XYtolin(linToX(hoveredIndex), Yhover - 1));
+                            performMove(XYtolin(linToX(hoveredIndex), Yhover - 1), hoveredIndex);
+                        } else {
+                            performMove(zeroIndex, XYtolin(linToX(hoveredIndex), Yhover + 1));
+                            performMove(XYtolin(linToX(hoveredIndex), Yhover + 1), hoveredIndex);
+                        }
+                    }
+                    if (linToY(zeroIndex) === linToY(hoveredIndex)) {
+                        //same horizontal
+                        Xzero = linToX(zeroIndex);
+                        Xhover = linToX(hoveredIndex);
+                        if (Xhover > Xzero) {
+                            performMove(zeroIndex, XYtolin(linToX(hoveredIndex) - 1, linToY(hoveredIndex)));
+                            performMove(XYtolin(linToX(hoveredIndex) - 1, linToY(hoveredIndex)), hoveredIndex);
+                        } else {
+                            performMove(zeroIndex, XYtolin(linToX(hoveredIndex) + 1, linToY(hoveredIndex)));
+                            performMove(XYtolin(linToX(hoveredIndex) + 1, linToY(hoveredIndex)), hoveredIndex);
+                        }
+                    }
+                }
             }
         }
 
