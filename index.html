@@ -437,12 +437,20 @@
         function convertScramble() {
             return document.getElementById('gridContainer').innerHTML.replace(/[^\d]/g, '').split('').join(' ').replace(/(.*)( .*)/, '$1$2').replace(/^(.{5})(.)(.{5})(.)/, '$1/$3/');
         }
-
+        
+        function failedDisplay(){
+            movesDisplayElement.innerHTML = "you failed, skip!";
+            container.style.boxShadow = '0 16px 16px rgba(255, 0, 0, 10)';
+            movesDisplayElement.classList = 'badMoves';
+        }
         function updatePuzzleInfo() {
             if (nowSolving) {
                 currentMoves += 1;
-                movesDisplayElement.innerHTML = currentMoves;
-
+                if (currentMoves >31) {
+                    failedDisplay();
+                }else{
+                     movesDisplayElement.innerHTML = currentMoves;
+                }
                 if (document.getElementById('gridContainer').innerHTML.replace(/[^\d]/g, '') === '123456780') {
                     nowSolving = false;
                     if (currentMoves.toString() === currentOpt) {
@@ -458,9 +466,8 @@
                         scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + wrapTextWithSpan(actuallyDoneAmount.toString(), "numbers");
                     } else {
                         console.log("WRONG, opt was " + currentOpt.toString() + " scr: " + currentState);
-                        movesDisplayElement.innerHTML += "<br>(not optimal)";
-                        movesDisplayElement.classList = 'badMoves';
-                        container.style.boxShadow = '0 16px 16px rgba(255, 0, 0, 10)';
+                        failedDisplay();
+                        movesDisplayElement.innerHTML = "not optimal (" + currentMoves.toString() + ")";
                         finishedBad += 1;
                         finishedBadDisplayElement.innerHTML = "Fails (finished, not optimal): " + wrapTextWithSpan(finishedBad.toString(), "numbers");
                     }
@@ -468,9 +475,7 @@
                 } else {
                     var curScr = convertScramble();
                     if (scramblesToRemove.includes(curScr)){
-                        movesDisplayElement.innerHTML += "<br>you failed, skip!";
-                        container.style.boxShadow = '0 16px 16px rgba(255, 0, 0, 10)';
-                        movesDisplayElement.classList = 'badMoves';
+                        failedDisplay();
                     }
                     scramblesToRemove.push(curScr);
                 }
