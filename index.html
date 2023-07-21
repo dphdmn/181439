@@ -279,11 +279,11 @@
         <br>
 
         <div class="container-CB">
-            <input type="checkbox" id="myCheckbox" checked="True">
+            <input type="checkbox" id="myCheckbox" checked="true">
             <label id="cblabel" for="myCheckbox">Mouse control enabled</label>
         </div>
         <div class="container-CB">
-            <input type="checkbox" id="myCheckbox_keys" checked="False">
+            <input type="checkbox" id="myCheckbox_keys" checked="false">
             <label id="cblabel_keys" for="myCheckbox_keys">I am not vovker</label>
         </div>
     </div>
@@ -294,6 +294,8 @@
         const cblabel = document.getElementById('cblabel');
         const checkbox_keys = document.getElementById('myCheckbox_keys');
         const cblabel_keys = document.getElementById('cblabel_keys');
+        checkbox_keys.checked = false;
+        cblabel_keys.innerHTML = "I am not vovker";
         function loadCheckboxState() {
             const savedState = localStorage.getItem('checkboxState');
             if (savedState !== null) {
