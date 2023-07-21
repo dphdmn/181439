@@ -29,10 +29,46 @@
         }
 
         .information {
-            font-family: Calibri;
             position: absolute;
-            margin-left: 1200px;
+            border:
+                top: 150px;
+            min-width: 400px;
+            /* Adjust the initial top position */
+            left: 1350px;
+            /* Adjust the initial left position */
             text-align: center;
+            border: 2px solid;
+            border-radius: 10px;
+            padding: 20px 30px;
+            background-color: #202020;
+            box-shadow: 0 8px 8px rgba(0, 255, 255, 2);
+        }
+
+        #tipinfo {
+            font-size: 15px;
+            color: gray;
+        }
+
+        .information .header {
+            cursor: grab;
+            padding: 12px 24px;
+            font-size: 30px;
+            color: #ffffff;
+            background-color: #1a1a1a;
+            box-shadow: 0px 4px 4px rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: white;
+            font-weight: bold;
+            webkit-user-select: none;
+            /* Chrome, Safari, Opera */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* IE/Edge */
+            user-select: none;
+            /* Generic */
         }
 
         .grid-container {
@@ -72,6 +108,11 @@
 
         #moves {
             font-size: 50px;
+            min-height: 125px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: center;
         }
 
         #scramblesLeft {
@@ -223,6 +264,7 @@
             <!-- Grid elements will be generated here -->
         </div>
         <div class="information">
+            <div class="header">Information<br><span id="tipinfo">(you can move this window)</span></div>
             <p id="moves">0</p>
             <p id="scramblesLeft"></p>
             <p id="scramblesDone"></p>
@@ -327,6 +369,9 @@
         var actuallyDoneAmount = 0;
         var randItem;
         var scramblesToRemove = [];
+        scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + wrapTextWithSpan(actuallyDoneAmount.toString(), "numbers");
+        finishedBadDisplayElement.innerHTML = "Fails (finished, not optimal): " + wrapTextWithSpan(finishedBad.toString(), "numbers");
+        skipsDisplayElement.innerHTML = "Skips (spacebar while solving): " + wrapTextWithSpan(skips.toString(), "numbers");
         // Function to initialize the grid with the default state
         function savegame() {
             return btoa(JSON.stringify([scramblesList, finishedBad, actuallyDoneAmount, skips]));
@@ -403,13 +448,13 @@
                             scramblesList = scramblesList.filter(egg => egg['s'] !== item);
                         });
                         updateScrLength();
-                        movesDisplayElement.innerHTML += " (removed " + (before - scramblesList.length).toString() + " scrambles)";
+                        movesDisplayElement.innerHTML += "<br>(- " + (before - scramblesList.length).toString() + " scrambles!)";
                         movesDisplayElement.classList = 'goodMoves';
                         actuallyDoneAmount += 1;
                         scramblesActuallyDoneDisplayElement.innerHTML = "Actually done (full scrambles only): " + wrapTextWithSpan(actuallyDoneAmount.toString(), "numbers");
                     } else {
                         console.log("WRONG, opt was " + currentOpt.toString() + " scr: " + currentState);
-                        movesDisplayElement.innerHTML += " (not optimal)";
+                        movesDisplayElement.innerHTML += "<br>(not optimal)";
                         movesDisplayElement.classList = 'badMoves';
                         finishedBad += 1;
                         finishedBadDisplayElement.innerHTML = "Fails (finished, not optimal): " + wrapTextWithSpan(finishedBad.toString(), "numbers");
@@ -650,6 +695,31 @@
         });
         // Initialize the grid with the default state
         initializeGrid();
+
+        // JavaScript to make the floating window draggable
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        const information = document.querySelector('.information');
+        const header = information.querySelector('.header');
+
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - information.offsetLeft;
+            offsetY = e.clientY - information.offsetTop;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                information.style.left = e.clientX - offsetX + 'px';
+                information.style.top = e.clientY - offsetY + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
     </script>
 </body>
 
