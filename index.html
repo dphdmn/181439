@@ -220,6 +220,7 @@
         const scramblesActuallyDoneDisplayElement = document.getElementById('actuallyDone');
         const finishedBadDisplayElement = document.getElementById('finishedBad');
         const skipsDisplayElement = document.getElementById('skips');
+        const fileInput = document.getElementById('loadButton');
         var scramblesList = JSON.parse(myjson);
         updateScrLength();
         var cntrlPressed = false;
@@ -249,6 +250,7 @@
             skipsDisplayElement.innerHTML = "Skips (spacebar while solving): " + wrapTextWithSpan(skips.toString(), "numbers");
             nowSolving = false;
             initializeGrid();
+            fileInput.value = null;
         }
 
         function getRandomItem(list) {
