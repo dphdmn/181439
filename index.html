@@ -696,7 +696,7 @@
         // Initialize the grid with the default state
         initializeGrid();
 
-        // JavaScript to make the floating window draggable
+// JavaScript to make the floating window draggable
         let isDragging = false;
         let offsetX = 0;
         let offsetY = 0;
@@ -712,8 +712,25 @@
 
         document.addEventListener('mousemove', (e) => {
             if (isDragging) {
-                information.style.left = e.clientX - offsetX + 'px';
-                information.style.top = e.clientY - offsetY + 'px';
+                // Calculate the new position of the window
+                const left = e.clientX - offsetX;
+                const top = e.clientY - offsetY;
+
+                // Get the boundaries of the visible area
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+
+                // Restrict the movement within the boundaries of the screen
+                const maxLeft = screenWidth - information.offsetWidth;
+                const maxTop = screenHeight - information.offsetHeight;
+
+                // Ensure the window stays within the screen boundaries
+                const newLeft = Math.min(Math.max(0, left), maxLeft);
+                const newTop = Math.min(Math.max(0, top), maxTop);
+
+                // Apply the new position to the window
+                information.style.left = newLeft + 'px';
+                information.style.top = newTop + 'px';
             }
         });
 
@@ -722,7 +739,7 @@
         });
 
 
-        // JavaScript to make the floating window draggable
+// JavaScript to make the floating window draggable
         let game_isDragging = false;
         let game_offsetX = 0;
         let game_offsetY = 0;
@@ -738,9 +755,30 @@
 
         document.addEventListener('mousemove', (e) => {
             if (game_isDragging) {
-                game_information.style.left = e.clientX - game_offsetX + 'px';
-                game_information.style.top = e.clientY - game_offsetY + 'px';
+                // Calculate the new position of the window
+                const left = e.clientX - game_offsetX;
+                const top = e.clientY - game_offsetY;
+
+                // Get the boundaries of the visible area
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+
+                // Restrict the movement within the boundaries of the screen
+                const maxLeft = screenWidth - game_information.offsetWidth;
+                const maxTop = screenHeight - game_information.offsetHeight;
+
+                // Ensure the window stays within the screen boundaries
+                const newLeft = Math.min(Math.max(0, left), maxLeft);
+                const newTop = Math.min(Math.max(0, top), maxTop);
+
+                // Apply the new position to the window
+                game_information.style.left = newLeft + 'px';
+                game_information.style.top = newTop + 'px';
             }
+        });
+
+        document.addEventListener('mouseup', () => {
+            game_isDragging = false;
         });
 
         document.addEventListener('mouseup', () => {
