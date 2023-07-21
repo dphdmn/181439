@@ -186,6 +186,7 @@
             return "<span class=\"" + classname + "\">" + text + "</span>";
         }
         document.getElementById("loadButton").addEventListener("change", (event) => {
+            cntrlPressed = true;
             const fileInput = event.target;
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
@@ -194,6 +195,11 @@
                 reader.onload = (e) => {
                     const loadedContent = e.target.result;
                     loadgame(loadedContent);
+                    setTimeout(function() {
+                      // Code to execute after the delay of 2 seconds
+                      cntrlPressed = false;
+                    }, 1000);
+                    
                 };
 
                 reader.readAsText(file);
