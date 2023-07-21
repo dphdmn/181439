@@ -16,22 +16,19 @@
         }
 
         .container {
-
-            display: flex;
-            flex-direction: column;
-            /* Arrange items vertically */
-            align-items: center;
-            /* Center items horizontally */
-            justify-content: center;
-            /* Center items vertically */
-            height: 100vh;
-            /* Use the full viewport height */
+            text-align: center;
+            border: 2px solid;
+            border-radius: 10px;
+            padding: 20px 30px;
+            background-color: #202020;
+            box-shadow: 0 8px 8px rgba(0, 255, 255, 2);
+            position: absolute;
+            top: 150px;
         }
 
         .information {
             position: absolute;
-            border:
-                top: 150px;
+            top: 150px;
             min-width: 400px;
             /* Adjust the initial top position */
             left: 1350px;
@@ -49,7 +46,8 @@
             color: gray;
         }
 
-        .information .header {
+        .header {
+            text-align: center;
             cursor: grab;
             padding: 12px 24px;
             font-size: 30px;
@@ -74,6 +72,7 @@
         .grid-container {
             width: 400px;
             height: 400px;
+            font-size: 80px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-gap: 1px;
@@ -90,7 +89,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 80px;
             font-weight: bold;
             width: 100%;
             height: 100%;
@@ -152,7 +150,7 @@
         }
 
         .empty-tle {
-            color: #2c2c2c;
+            color: #202020;
             border: 0;
         }
 
@@ -260,26 +258,28 @@
 
 <body>
     <div class="container">
+        <div class="header">Puzzle<br><span id="tipinfo">(you can move this window)<br>Resize puzzle with PageUp and
+                PageDown keys!</span></div>
         <div class="grid-container" id="gridContainer">
             <!-- Grid elements will be generated here -->
         </div>
-        <div class="information">
-            <div class="header">Information<br><span id="tipinfo">(you can move this window)</span></div>
-            <p id="moves">0</p>
-            <p id="scramblesLeft"></p>
-            <p id="scramblesDone"></p>
-            <p id="actuallyDone"></p>
-            <p id="finishedBad"></p>
-            <p id="skips"></p>
-            <button id="saveButton">Save to File</button>
-            <input type="file" id="loadButton" accept=".txt" style="display: none;">
-            <button onclick="document.getElementById('loadButton').click()">Load from File</button>
-            <br>
+    </div>
+    <div class="information">
+        <div class="header">Information<br><span id="tipinfo">(you can move this window)</span></div>
+        <p id="moves">0</p>
+        <p id="scramblesLeft"></p>
+        <p id="scramblesDone"></p>
+        <p id="actuallyDone"></p>
+        <p id="finishedBad"></p>
+        <p id="skips"></p>
+        <button id="saveButton">Save to File</button>
+        <input type="file" id="loadButton" accept=".txt" style="display: none;">
+        <button onclick="document.getElementById('loadButton').click()">Load from File</button>
+        <br>
 
-            <div class="container-CB">
-                <input type="checkbox" id="myCheckbox" checked="True">
-                <label id="cblabel" for="myCheckbox">Mouse control enabled</label>
-            </div>
+        <div class="container-CB">
+            <input type="checkbox" id="myCheckbox" checked="True">
+            <label id="cblabel" for="myCheckbox">Mouse control enabled</label>
         </div>
     </div>
     <script src="json.js"></script>
@@ -719,6 +719,67 @@
 
         document.addEventListener('mouseup', () => {
             isDragging = false;
+        });
+
+
+        // JavaScript to make the floating window draggable
+        let game_isDragging = false;
+        let game_offsetX = 0;
+        let game_offsetY = 0;
+
+        const game_information = document.querySelector('.container');
+        const game_header = game_information.querySelector('.header');
+
+        game_header.addEventListener('mousedown', (e) => {
+            game_isDragging = true;
+            game_offsetX = e.clientX - game_information.offsetLeft;
+            game_offsetY = e.clientY - game_information.offsetTop;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (game_isDragging) {
+                game_information.style.left = e.clientX - game_offsetX + 'px';
+                game_information.style.top = e.clientY - game_offsetY + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            game_isDragging = false;
+        });
+        document.addEventListener("keydown", function (event) {
+            const gridContainer = document.querySelector(".grid-container");
+            const computedStyle = window.getComputedStyle(gridContainer);
+
+            const currentWidth = parseInt(computedStyle.width);
+            const currentHeight = parseInt(computedStyle.height);
+            const currentFontSize = parseInt(computedStyle.fontSize);
+
+            let widthChange = 0;
+            let heightChange = 0;
+            let fontSizeChange = 0;
+            if (event.key === "PageUp") {
+                if (currentWidth < 710) {
+                    widthChange = 10;
+                    heightChange = 10;
+                    fontSizeChange = 2;
+                } else {
+                    return;
+                }
+            } else if (event.key === "PageDown") {
+                if (currentWidth > 160) {
+                    widthChange = -10;
+                    heightChange = -10;
+                    fontSizeChange = -2;
+                } else {
+                    return;
+                }
+            } else {
+                return; // Exit early if any other key is pressed
+            }
+
+            gridContainer.style.width = currentWidth + widthChange + "px";
+            gridContainer.style.height = currentHeight + heightChange + "px";
+            gridContainer.style.fontSize = currentFontSize + fontSizeChange + "px";
         });
     </script>
 </body>
