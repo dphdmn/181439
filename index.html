@@ -245,7 +245,21 @@
 
         const checkbox = document.getElementById('myCheckbox');
         const cblabel = document.getElementById('cblabel');
+        function loadCheckboxState() {
+            const savedState = localStorage.getItem('checkboxState');
+            if (savedState !== null) {
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                    cblabel.innerHTML = "Mouse control enabled";
+                } else {
+                    checkbox.checked = false;
+                    cblabel.innerHTML = "Mouse control disabled";
+                }
+            }
+        }
+        loadCheckboxState();
         checkbox.addEventListener('change', function () {
+            localStorage.setItem('checkboxState', checkbox.checked);
             if (this.checked) {
                 cblabel.innerHTML = "Mouse control enabled";
             } else {
